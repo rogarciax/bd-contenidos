@@ -151,14 +151,14 @@ Esta formalización matemática es lo que hace que el modelo relacional sea tan 
 
 - Formalmente, dados
 	- $R(A_1, A_2, \dots, A_n)$
-	- $r(R) \subset dom(A_1) \times dom(A_2) \times \dots \times dom(A_n)$
+	- $r(R) \subseteq dom(A_1) \times dom(A_2) \times \dots \times dom(A_n)$
 
 - $R(A_1, A_2, \dots, A_n)$ es el esquema de la relación
 	- $R$ es el nombre de la relación.
 	- $A_1, A_2, \dots, A_n$ son los atributos de la relación
 - $r(R)$: un estado específico (o "población") de la relación $R$: un conjunto de tuplas (filas)
 	- $r(R) = {t_1, t_2, \dots, t_n}$ donde cada $t_i$ es una tupla de grado $n$
-	- $t_i = (v_1, v_2, \dots, v_n)$ donde cada elemento $v_j$  es del dominio $A_j$
+	- $t_i = (v_1, v_2, \dots, v_n)$ donde cada elemento $v_j$ es del dominio de $A_j$
 
 #### Ejemplo de estado de una relación
 
