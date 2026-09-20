@@ -363,7 +363,7 @@ La creación de este esquema de bases de datos en un SBDR consiste en definir to
 
 ```sql
 
--- EMPLEADO(nombre, apellido1, apellido2, dni, fechaNac, dirección, sexo, sueldo, superdni, numeroDpto )
+-- EMPLEADO(nombre, apellido1, apellido2, dni, fechaNac, dirección, sexo, sueldo, supervisor, numeroDpto )
 
 CREATE TABLE EMPLEADO (	
 	nombre VARCHAR(40) NOT NULL,
