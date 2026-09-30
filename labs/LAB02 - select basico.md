@@ -21,8 +21,13 @@ Escribe una consulta que calcule y devuelva una columna llamada `que_donde` que 
 
 Solución:
 ```sql
-
-
+select 
+	upper(genero) || ' ' || lower(pais) as que_donde, 
+	round(me_gusta * 100.0 / reproducciones, 1) as porcentaje_me_gusta 
+from cancion 
+where idioma != 'ES' 
+order by porcentaje_me_gusta desc
+limit 10;
 ```
 
 Resultado:
@@ -167,8 +172,17 @@ Para emitir una canción en la radio hay que añadirle una cuña publicitaria. E
 
 Solución:
 ```sql
-
-
+select distinct 
+	titulo, 
+	pais,
+	duracion,
+	case
+		when pais = 'Reino Unido' then round((duracion + 30) / 60.0, 2)
+		when pais = 'España' then round((duracion + 45) / 60.0, 2)
+	end as duracion_radio_min
+from cancion
+order by duracion desc
+limit 20;
 ```
 
 Resultado:
@@ -371,8 +385,9 @@ Escribe una consulta para encontrar las canciones (`cancion`) cuya duración (`d
 
 Solución:
 ```sql
-
-
+select *
+from cancion
+where duracion is not null and idioma is null
 ```
 
 Resultado:
@@ -471,8 +486,12 @@ Escribe una consulta que devuelva todas las columnas de las canciones y añada u
 
 Solución:
 ```sql
-
-
+select 
+	*,
+	coalesce(duracion, reproducciones, me_gusta, valoracion, -1) as primer_dato
+from cancion
+order by id_cancion desc
+limit 10;
 ```
 
 Resultado:
@@ -582,13 +601,17 @@ Escribe una consulta que cuente las canciones que **no** están en inglés, cont
 Solución:
 
 ```sql
+select
+	count(*) as no_ingles
+from cancion
+where lower(coalesce(idioma, 'no_disponible')) != 'en'
 ```
 
 Resultado:
  
-| no_ingles |
-| --------- |
-| 27        | 
+| no_ingles |     |
+| --------- | --- |
+| 27        |     |
 
 ---
 
@@ -632,9 +655,9 @@ from cancion;
 ```
 Salida:
 
-| mas_larga | mas_corta | ratio_raro         |
-| --------- | --------- | ------------------ |
-| 431       | 122       | 0.0376337567207215 | 
+| mas_larga | mas_corta | ratio_raro         |     |
+| --------- | --------- | ------------------ | --- |
+| 431       | 122       | 0.0376337567207215 |     |
 
 - `max`, `min`y `avg` son otras funciones de agregación en SQL
 - En realidad, esto no debería funcionar: no se puede calcular el máximo ni el promedio si algún valor es nulo.
@@ -644,6 +667,7 @@ Salida:
 
 >[!question] Pregunta
 >¿Qué devolverá la función `avg` si todos los valores son nulos?
+>*Pues si se ignoran en las funciones de agregación y se divide 0 entre el total saldrá 0*
 
 ---
 
@@ -653,15 +677,16 @@ Salida:
 
 Solución:
 ```sql
-
-
+select avg(reproducciones)
+from cancion
+where reproducciones > 1000000;
 ```
 
 Resultado:
 
 | avg(reproducciones) |
 | ------------------- |
-| 638551919.354839   |
+| 638551919.354839    |
 
 ---
 
@@ -693,8 +718,8 @@ Salida:
 
 Solución:
 ```sql
-
-
+select count(distinct anio) as anios_distintos
+from cancion;
 ```
 
 Resultado:
@@ -717,11 +742,11 @@ group by idioma;
 ```
 Salida:
 
-| idioma | media_reproducciones |
-| ------ | -------------------- |
-|        | 137940833.333333     |
-| EN     | 691769319.148936     |
-| ES     | 347325444.444444     | 
+| idioma | media_reproducciones |     |
+| ------ | -------------------- | --- |
+|        | 137940833.333333     |     |
+| EN     | 691769319.148936     |     |
+| ES     | 347325444.444444     |     |
 
 - Coloca las filas en grupos según distintas combinaciones de valores en las columnas especificadas con `group by`
 - Luego realiza la agregación por separado para cada grupo
@@ -763,8 +788,10 @@ Escribe una consulta que muestre cada año de publicación (`anio`) distinto en 
 
 Solución:
 ```sql
-
-
+select distinct 
+	anio, count(*)
+from cancion
+group by anio;
 ```
 
 Resultado:
