@@ -466,7 +466,7 @@ Generalmente, el producto cartesiano **no es una operación significativa**, dad
 > Nom_Empleadas = pi Nombre, Apellido1, Dni (Empleadas)
 > Emp_Familiares = Nom_Empleadas x Familiar
 > Resultado = pi Nombre, Apellido1, NombSubordinado (Fam_Reales)
->  ```
+>```
 >  Resultado contendrá cada combinación de Nom_Empleadas y Familiar estén realmente
 >  relacionados o no. 
 >

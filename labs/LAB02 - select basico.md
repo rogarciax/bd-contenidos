@@ -907,8 +907,11 @@ Escribe una consulta que cuente el número de canciones de cada una de las sigui
 
 Solución:
 ```sql
-
-
+select
+	count(*) filter (where duracion < 200) as 'corta',
+	count(*) filter (where duracion between 200 and 300) as 'media',
+	count(*) filter (where duracion > 300) as 'larga'
+from cancion;
 ```
 
 Resultado:

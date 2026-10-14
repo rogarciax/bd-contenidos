@@ -465,7 +465,25 @@ En caso de ser una sola columna, crea una restricción a nivel de columna.
 
 Solución:
 ```sql
+drop table if exists EMPLEADO;
 
+CREATE TABLE EMPLEADO (	
+	nombre TEXT NOT NULL,
+	apellido1 TEXT NOT NULL,
+	apellido2 TEXT,
+	dni TEXT PRIMARY KEY NOT NULL,
+	fechaNac TEXT NOT NULL,
+	direccion TEXT,
+	sexo TEXT NOT NULL,
+	sueldo REAL NOT NULL,
+	supervisor TEXT,
+	dpto INTEGER NOT NULL
+) STRICT;
+  
+ SELECT 
+	Lower(tbl_name) as name, 
+	Lower(REPLACE(REPLACE(REPLACE(REPLACE(sql, ' ', ''), CHAR(9), ''), CHAR(10), ''), CHAR(13), '')) as sql
+from sqlite_schema where type='table' and Lower(name)='empleado';
 ```
 
 Para verificar tu respuesta, selecciona su definición de la tabla sqlite_schema mediante la siguiente consulta:
@@ -678,7 +696,7 @@ Las acciones disponibles para mantener la integridad referencial son:
 		- `SET NULL`: pone a NULL una clave externa si su clave primaria referenciada se ve modificada. La clave externa debe admitir valores NULL.
 		- `SET DEFAULT`: pone el valor por defecto en una clave externa si su clave primaria referenciada se ve modificada. El valor por defecto debe estar especificado.
 
-Se tienen indican las acciones a realizar en caso de que:
+Se tienen que indicar las acciones a realizar en caso de que:
 - `ON UPDATE`, se actualicen los valores de las claves primarias referenciadas
 - `ON DELETE`, se eliminen filas con los valores de las claves primarias referenciadas
 
@@ -736,7 +754,22 @@ Reescribe la definición de la tabla de `FAMILIAR` para agregar su clave primari
 
 Solución
 ```sql
+drop table if exists FAMILIAR;
 
+create table if not exists FAMILIAR(
+	empleado TEXT NOT NULL,
+  	nombre TEXT NOT NULL,
+  	sexo TEXT NOT NULL CHECK (sexo in ('M', 'F', 'O')),
+  	fechaNac TEXT NOT NULL,
+	relacion TEXT CHECK (relacion in ('Hijo', 'Hija', 'Conyuge', 'Hermano', 'Hermana')),
+	PRIMARY KEY (empleado, nombre),
+ 	FOREIGN KEY (empleado) REFERENCES EMPLEADO(dni) ON UPDATE CASCADE ON DELETE CASCADE
+) STRICT;
+
+SELECT 
+	Lower(tbl_name) as name, 
+	Lower(REPLACE(REPLACE(REPLACE(REPLACE(sql, ' ', ''), CHAR(9), ''), CHAR(10), ''), CHAR(13), '')) as sql
+from sqlite_schema where type='table' and Lower(name)='familiar';
 ```
 
 Para verificar tu respuesta, selecciona su definición de la tabla sqlite_schema mediante la siguiente consulta:
@@ -750,9 +783,9 @@ from sqlite_schema where type='table' and Lower(name)='familiar';
 
 Tabla resultado:
 
-| name     | sql                                                                                                                                                                                                                                                                                                             | 
-| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| familiar | createtablefamiliar(empleadotextnotnull,nombretextnotnull,sexotextnotnullcheck(sexoin('m','f','o')),fechanactextnotnull,relaciontextcheck(relacionin('hijo','hija','conyuge','hermano','hermana')),primarykey(empleado,nombre),foreignkey(empleado)referencesempleado(dni)onupdatecascadeondeletecascade)strict |
+| name     | sql                                                                                                                                                                                                                                                                                                             |     |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| familiar | createtablefamiliar(empleadotextnotnull,nombretextnotnull,sexotextnotnullcheck(sexoin('m','f','o')),fechanactextnotnull,relaciontextcheck(relacionin('hijo','hija','conyuge','hermano','hermana')),primarykey(empleado,nombre),foreignkey(empleado)referencesempleado(dni)onupdatecascadeondeletecascade)strict |     |
 
 ---
 ## Tipos de asociaciones entre tablas

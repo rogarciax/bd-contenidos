@@ -1,4 +1,4 @@
-# Fechas y Consultas Combinadas
+	# Fechas y Consultas Combinadas
 
 ---
 
@@ -23,15 +23,20 @@ Escribe una consulta que devuelva el sueldo medio por departamento para departam
 
 Solución:
 ```sql
-
+select
+	dpto,
+	avg(sueldo) as sueldo_medio
+from empleado
+group by dpto
+having count(*) > 1;
 ```
 
 Resultado:
 
-| dpto | sueldo_medio | 
-| ---- | ------------ |
-| 4    | 31000        |
-| 5    | 33250        |
+| dpto | sueldo_medio |     |
+| ---- | ------------ | --- |
+| 4    | 31000        |     |
+| 5    | 33250        |     |
 
 ---
 
@@ -77,12 +82,12 @@ select * from departamento;
 
 Tabla resultado:
 
-| nombre         | numero | director  | fechaIngresoDirector |
-| -------------- | ------ | --------- | -------------------- |
-| Sede Central   | 1      | 888665555 | 1981-06-19           |
-| Administración | 4      | 987654321 | 1995-01-01           |
-| Investigación  | 5      | 333445555 | 2025-10-03 15:39:08  | 
-| Ventas         | 6      | 453453453 | 2024-08-15 12:00:00  |
+| nombre         | numero | director  | fechaIngresoDirector |     |
+| -------------- | ------ | --------- | -------------------- | --- |
+| Sede Central   | 1      | 888665555 | 1981-06-19           |     |
+| Administración | 4      | 987654321 | 1995-01-01           |     |
+| Investigación  | 5      | 333445555 | 2025-10-03 15:39:08  |     |
+| Ventas         | 6      | 453453453 | 2024-08-15 12:00:00  |     |
 
 
 SQLite no posee un tipo de datos específico para fechas y horas. Otros SGBD tienen tipo de datos específicos.
@@ -107,12 +112,12 @@ from departamento;
 
 Tabla resultado:
 
-| nombre         | director  | local_datetime      | 
-| -------------- | --------- | ------------------- |
-| Sede Central   | 888665555 | 1981-06-19 02:00:00 |
-| Administración | 987654321 | 1995-01-01 01:00:00 |
-| Investigación  | 333445555 | 2025-10-03 19:42:24 |
-| Ventas         | 453453453 | 2024-08-15 14:00:00 |
+| nombre         | director  | local_datetime      |     |
+| -------------- | --------- | ------------------- | --- |
+| Sede Central   | 888665555 | 1981-06-19 02:00:00 |     |
+| Administración | 987654321 | 1995-01-01 01:00:00 |     |
+| Investigación  | 333445555 | 2025-10-03 19:42:24 |     |
+| Ventas         | 453453453 | 2024-08-15 14:00:00 |     |
 
 La función datetime convierte valores de fechas en cadenas de texto según el estándar ISO8601 ("AAAA-MM-DD HH:MM:SS.SSS").
 
@@ -134,12 +139,12 @@ from departamento;
 
 Tabla resultado:
 
-| nombre         | director  | local_date | local_time | 
-| -------------- | --------- | ---------- | ---------- |
-| Sede Central   | 888665555 | 1981-06-19 | 02:00:00   |
-| Administración | 987654321 | 1995-01-01 | 01:00:00   |
-| Investigación  | 333445555 | 2025-10-03 | 19:42:24   |
-| Ventas         | 453453453 | 2024-08-15 | 14:00:00   |
+| nombre         | director  | local_date | local_time |     |
+| -------------- | --------- | ---------- | ---------- | --- |
+| Sede Central   | 888665555 | 1981-06-19 | 02:00:00   |     |
+| Administración | 987654321 | 1995-01-01 | 01:00:00   |     |
+| Investigación  | 333445555 | 2025-10-03 | 19:42:24   |     |
+| Ventas         | 453453453 | 2024-08-15 | 14:00:00   |     |
 
 - La función `date` devuelve la fecha de un valor que almacena fecha y hora (`datetime`).
 - La función `time` devuelve la hora de un  que almacena fecha y hora (`datetime`).
@@ -162,9 +167,9 @@ from departamento;
 
 Tabla resultado:
 
-| nombre       | director  | mas_antiguo | hora     |
-| ------------ | --------- | ----------- | -------- |
-| Sede Central | 888665555 | 1981-06-19  | 02:00:00 | 
+| nombre       | director  | mas_antiguo | hora     |     |
+| ------------ | --------- | ----------- | -------- | --- |
+| Sede Central | 888665555 | 1981-06-19  | 02:00:00 |     |
 
 ---
 
@@ -182,10 +187,10 @@ where date(fechaIngresoDirector,'localtime') between date('now','-1 year','-6 mo
 
 Tabla resultado:
 
-| nombre        | director  | local_date | local_time |
-| ------------- | --------- | ---------- | ---------- |
-| Investigación | 333445555 | 2025-10-03 | 19:42:24   |
-| Ventas        | 453453453 | 2024-08-15 | 14:00:00   | 
+| nombre        | director  | local_date | local_time |     |
+| ------------- | --------- | ---------- | ---------- | --- |
+| Investigación | 333445555 | 2025-10-03 | 19:42:24   |     |
+| Ventas        | 453453453 | 2024-08-15 | 14:00:00   |     |
 
 Es posible comparar fechas con los operadores de comparación y otros operadores.
 
@@ -217,9 +222,9 @@ SELECT date('2024-02-01','start of month','+1 month','-1 day') as last_day;
 
 Tabla resultado:
 
-| last_day   |
-| ---------- |
-| 2024-02-29 | 
+| last_day   |     |
+| ---------- | --- |
+| 2024-02-29 |     |
 
 Otros modificadores disponibles:
 
@@ -242,16 +247,22 @@ Escribe una consulta para obtener el nombre, apellido1 y fechaNac de los emplead
 
 Solución:
 ```sql
-
+select
+	nombre,
+	apellido1,
+	fechaNac
+from empleado
+where date(fechaNac, 'localtime') between date('2025-01-01', '-70 years') and date('2025-01-01', '-59 years');
 ```
+*Aquí hay algo mal*
 
 Tabla resultado:
 
-| nombre   | apellido1 | fechaNac   |
-| -------- | --------- | ---------- |
-| José     | Pérez     | 1965-09-01 |
-| Alberto  | Campos    | 1955-12-08 | 
-| Fernando | Ojeda     | 1962-09-15 |
+| nombre   | apellido1 | fechaNac   |     |
+| -------- | --------- | ---------- | --- |
+| José     | Pérez     | 1965-09-01 |     |
+| Alberto  | Campos    | 1955-12-08 |     |
+| Fernando | Ojeda     | 1962-09-15 |     |
 
 ---
 
@@ -270,12 +281,12 @@ from departamento;
 
 Tabla resultado:
 
-| nombre         | director  | fecha               | year | month | day |
-| -------------- | --------- | ------------------- | ---- | ----- | --- |
-| Sede Central   | 888665555 | 1981-06-19          | 1981 | 06    | 19  |
-| Administración | 987654321 | 1995-01-01          | 1995 | 01    | 01  | 
-| Investigación  | 333445555 | 2025-10-03 17:42:24 | 2025 | 10    | 03  |
-| Ventas         | 453453453 | 2024-08-15 12:00:00 | 2024 | 08    | 15  |
+| nombre         | director  | fecha               | year | month | day |     |
+| -------------- | --------- | ------------------- | ---- | ----- | --- | --- |
+| Sede Central   | 888665555 | 1981-06-19          | 1981 | 06    | 19  |     |
+| Administración | 987654321 | 1995-01-01          | 1995 | 01    | 01  |     |
+| Investigación  | 333445555 | 2025-10-03 17:42:24 | 2025 | 10    | 03  |     |
+| Ventas         | 453453453 | 2024-08-15 12:00:00 | 2024 | 08    | 15  |     |
 
 La función `strftime()` devuelve la fecha formateada según la cadena de formato especificada como primer argumento. Si no es posible realizar el formateo, devuelve `NULL`.
 
@@ -519,7 +530,13 @@ Escribe una consulta que devuelva los empleados con más de un familiar que no s
 
 Solución:
 ```sql
-
+select dni as empleado from empleado
+except
+select supervisor as empleado from empleado
+intersect
+select empleado from familiar
+group by empleado
+having count(*) > 1;
 ```
 
 Tabla resultado:
@@ -635,7 +652,7 @@ Tabla resultado:
 **Una consulta algo más interesante**: Hacer una lista de todos los números de proyecto para aquellos proyectos que involucran a un empleado cuyo apellido sea  'Campos', ya sea como trabajador o como director del departamento que controla el proyecto.
 
 - La primera consulta SELECT recupera los proyectos que involucran a un 'Campos' como director del departamento que controla el proyecto.
-- La segunda recupera los proyectos que involucran a un 'Campos' como trabajador.
+		- La segunda recupera los proyectos que involucran a un 'Campos' como trabajador.
 - Al aplicar la operación UNION a las dos consultas SELECT se obtiene el resultado deseado.
 
 >[!info] Múltiples tablas en la cláusula `FROM` sin `JOIN`.
@@ -649,8 +666,15 @@ Escribe una consulta que devuelva el dni de los empleados que no tienen familiar
 
 Solución:
 ```sql
+select dni from empleado
+except
+select empleado as dni from familiar
 
+union
 
+select supervisor as dni from empleado
+group by supervisor
+having count(*) > 2
 ```
 
 Tabla resultado:
