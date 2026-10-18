@@ -21,7 +21,12 @@ Escribe una consulta para obtener el nombre del departamento, su director, su fe
 
 Solución:
 ```sql
-
+select
+	nombre,
+	director,
+	date(fechaIngresoDirector, 'localtime') as fecha, 
+	max(strftime("%m", fechaIngresoDirector)) as mes
+from departamento
 ```
 
 Tabla resultado:
@@ -89,7 +94,7 @@ Tabla resultado:
 | Aurora | Oliva     | 453453453 | Alfonso |
 
 
-- El **producto cartesiano** (CROSS JOIN) de dos o más tablas **produce un esquema** que será la **concatenación de los esquemas de las tablas involucradas.**
+- El **producto cartesiano** (CROSS JOIN) de dos o más tablas **produce un esquema** que será la **concatenación de los esquemas de las tablas involucradas**.
 - Las **tuplas de la relación resultante** se habrán obtenido mediante **concatenación de cada tupla de una de las tablas con todas las tuplas de las otras**.
 - El **resultado del producto cartesiano no suele ser especialmente útil o significativo** porque la mayoría de los datos combinados tienen tuplas que no tienen nada que ver que ver entre sí.
 
@@ -170,7 +175,12 @@ Tabla resultado:
 Escribe una consulta que devuelva el nombre de cada proyecto (nombre_proyecto) y el total de horas trabajadas en cada uno (total_horas_dedicadas), ordena los resultados por las horas trabajabas empezando por el de mayor horas. 
 
 ```sql
-
+select
+	P.nombre as nombre_proyecto,
+	sum(TE.horas) as total_horas_dedicadas
+from PROYECTO P INNER JOIN TRABAJA_EN TE ON TE.proyecto = P.numero
+group by nombre_proyecto
+order by total_horas_dedicadas desc
 ```
 
 Tabla resultado:
@@ -239,14 +249,14 @@ WHERE E.sexo='F';
 
 Tabla resultado: 
 
-| nombre         | ubicacion | nombre | apellido1 | 
-| -------------- | --------- | ------ | --------- |
-| ProductoX      | Valencia  | Aurora | Oliva     |
-| ProductoY      | Sevilla   | Aurora | Oliva     |
-| Reorganización | Madrid    | Juana  | Sáinz     |
-| Comunicaciones | Gijón     | Juana  | Sáinz     |
-| Computación    | Gijón     | Alicia | Jiménez   |
-| Comunicaciones | Gijón     | Alicia | Jiménez   |
+| nombre         | ubicacion | nombre | apellido1 |     |
+| -------------- | --------- | ------ | --------- | --- |
+| ProductoX      | Valencia  | Aurora | Oliva     |     |
+| ProductoY      | Sevilla   | Aurora | Oliva     |     |
+| Reorganización | Madrid    | Juana  | Sáinz     |     |
+| Comunicaciones | Gijón     | Juana  | Sáinz     |     |
+| Computación    | Gijón     | Alicia | Jiménez   |     |
+| Comunicaciones | Gijón     | Alicia | Jiménez   |     |
 
 - Se pueden **concatenar todas las tablas que hagan falta** mediante una secuencia de operaciones `JOIN`
 - Una de las **primeras decisiones** al realizar una consulta SQL debe ser **qué tablas se deben concatenar** para obtener la información solicitada
@@ -260,7 +270,15 @@ Escribe una consulta que devuelva el nombre (nombre_empleado) y apellido1 de emp
 Solución:
 
 ```sql
-
+select
+	E.nombre as nombre_empleado,
+	E.apellido1,
+	P.nombre as nombre_proyecto,
+	P.ubicacion
+from
+	EMPLEADO E INNER JOIN TRABAJA_EN TE ON(TE.empleado = E.dni) 
+	INNER JOIN PROYECTO P ON(TE.proyecto = P.numero)
+order by nombre_empleado asc
 ```
 
 Tabla resultado:
@@ -320,7 +338,13 @@ Tabla resultado:
 Escribe una consulta que devuelva los empleados que ganan entre 2000 y 10000 euros menos que su supervisor directo. Las columnas resultado deben ser: nombre_empleado, sueldo_empleado, nombre_supervisor y sueldo_supervisor.
 
 ```sql
-
+select
+	E.nombre as nombre_empleado,
+	E.sueldo as sueldo_empleado,
+	S.nombre as nombre_supervisor,
+	S.sueldo as sueldo_supervisor
+from EMPLEADO S INNER JOIN EMPLEADO E ON(S.dni = E.supervisor)
+where abs(sueldo_empleado - sueldo_supervisor) between 2000 and 10000
 ```
 
 Tabla resultado:
@@ -486,7 +510,14 @@ INSERT INTO Proyecto VALUES ('ProductoGTP',6,'Madrid',5);
 
 Solución:
 ```sql
-
+select
+	P.nombre as nombre_proyecto,
+	E.nombre as nombre_empleado,
+	TE.horas
+from
+	PROYECTO P FULL OUTER JOIN TRABAJA_EN TE ON(TE.proyecto = P.numero)
+	LEFT JOIN EMPLEADO E ON(TE.empleado = E.dni)
+group by nombre_proyecto, nombre_empleado
 ```
 
 Tabla resultado:
@@ -617,7 +648,12 @@ Obtener un listado con el nombre completo de los empleados que **NO** tienen nin
 
 Solución:
 ```sql
-
+select
+	E.nombre,
+	E.apellido1,
+	E.apellido2
+from EMPLEADO E FULL OUTER JOIN FAMILIAR F ON E.dni = F.empleado
+where E.dni is NULL or F.empleado is NULL;
 ```
 
 Tabla resultado:
@@ -787,7 +823,14 @@ Escribe una consulta que devuelva para cada departamento su nombre (nombre_depar
 Solución:
 
 ```sql
-
+select
+	D.nombre as nombre_departamento,
+	count(distinct P.numero) as num_proyectos,
+	sum(TE.horas) as total_horas_dedicadas
+from DEPARTAMENTO D INNER JOIN PROYECTO P ON P.dpto = D.numero
+	 INNER JOIN TRABAJA_EN TE ON TE.proyecto = P.numero
+group by D.numero
+order by total_horas_dedicadas desc;
 ```
 
 Tabla resultado:
