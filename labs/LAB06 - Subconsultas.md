@@ -32,7 +32,16 @@ La dirección de la empresa necesita un informe completo sobre la situación de 
 
 Solución:
 ```sql
-
+select
+	D.nombre as nombre_departamento,
+	E1.nombre || " " || E1.apellido1 as nombre_director,
+	count(distinct E2.dni) as num_empleados,
+	count(distinct P.numero) as num_proyectos
+from DEPARTAMENTO D INNER JOIN EMPLEADO E1 ON D.director = E1.dni
+	 LEFT JOIN EMPLEADO E2 ON D.numero = E2.dpto AND D.director != E2.dni
+	 LEFT JOIN PROYECTO P ON D.numero = P.dpto
+group by D.numero
+order by num_empleados desc;
 ```
 
 Tabla resultado:
@@ -57,9 +66,6 @@ Algunas características de las subconsultas son:
 - **Filtrado avanzado**: permiten filtrar resultados basados en información derivada de otras tablas o cálculos, algo que no siempre es posible con operadores simples.​
 - **Optimización de consultas**: pueden mejorar el rendimiento al trabajar con subconjuntos de datos más específicos.​
 - **Flexibilidad**: permiten combinar datos de maneras muy flexibles, al usarse en múltiples secciones de una consulta: en la cláusula **`SELECT`**, **`WHERE`**, o **`FROM`**.​
-
----
-# Subconsultas No Correlacionadas
 
 ---
 
@@ -176,7 +182,15 @@ Escribe una consulta que muestre los nombres de los departamentos cuyo sueldo me
 
 Solución:
 ```sql
-
+select 
+	D.nombre,
+	avg(E1.sueldo) as sueldoMedio
+from EMPLEADO E1 INNER JOIN DEPARTAMENTO D ON E1.dpto = D.numero
+group by D.numero
+having sueldo_medio > (
+  select avg(E2.sueldo)
+  from EMPLEADO E2
+);
 ```
 
 Tabla resultado:
@@ -291,7 +305,17 @@ Escribe una consulta que liste el nombre y apellido de los empleados que trabaja
 
 Solución:
 ```sql
-
+select
+	E1.nombre,
+	E1.apellido1
+from EMPLEADO E1
+where E1.dni in (
+	select E2.dni
+  	from EMPLEADO E2 INNER JOIN TRABAJA_EN TE ON TE.empleado = E2.dni
+  		 INNER JOIN PROYECTO P ON TE.proyecto = P.numero
+  	where P.ubicacion = 'Madrid'
+)
+order by E1.nombre, E1.apellido1;
 ```
 
 Tabla resultado:
@@ -431,7 +455,16 @@ Escribe una consulta que liste el el nombre y apellido de cada empleado junto co
 
 Solución:
 ```sql
-
+select
+	E1.nombre,
+	E1.apellido1,
+	E1.sueldo - (
+	  select avg(E2.sueldo)
+	  from EMPLEADO E2
+	  where E2.dpto = E1.dpto
+	) as diferenciaSueldoMedio
+from EMPLEADO E1
+order by diferenciaSueldoMedio desc
 ```
 
 Tabla resultado:
@@ -518,7 +551,14 @@ Escribe una consulta que liste el nombre de los proyectos donde trabaja al menos
 
 Solución:
 ```sql
-
+select P.nombre
+from PROYECTO P
+where exists (
+	select TE.proyecto
+  	from TRABAJA_EN TE INNER JOIN EMPLEADO E ON TE.empleado = E.dni
+  		 INNER JOIN DEPARTAMENTO D ON E.dpto = D.numero
+  	where TE.proyecto = P.numero and D.nombre = 'Investigación'
+);
 ```
 
 Tabla resultado:
@@ -562,7 +602,6 @@ WHERE dni NOT IN (
 
 ---
 ## Subconsultas en UPDATE: WHERE
-
 ```sql
 UPDATE EMPLEADO
 SET sueldo = sueldo + (sueldo*0.30)
@@ -607,7 +646,20 @@ SELECT nombre, apellido1, sueldo FROM EMPLEADO;
 
 Solución:
 ```sql
+update EMPLEADO
+set sueldo = sueldo * 1.20
+where dni in (
+  select TE1.empleado 
+  from TRABAJA_EN TE1
+  group by TE1.empleado
+  having sum(TE1.horas) > (
+	select 1.0 * sum(TE2.horas) / count(distinct TE2.empleado)
+	from TRABAJA_EN TE2
+	where TE2.horas is not null
+  )
+);
 
+select E1.nombre, E1.apellido1, E1.sueldo from EMPLEADO E1;
 ```
 
 Tabla resultado:
@@ -738,7 +790,14 @@ Escribe una consulta que devuelva el `dni` de los empleados que no tienen ningú
 
 Solución:
 ```sql
-
+select E.dni
+from EMPLEADO E
+where not exists (
+	select 1
+  	from FAMILIAR F
+  	where F.empleado = E.dni
+)
+order by E.dni
 ```
 
 Tabla resultado:
@@ -796,7 +855,20 @@ WHERE P.ubicacion = 'Madrid';
 
 Solución:
 ```sql
-
+select distinct
+	E.nombre,
+	E.apellido1
+from EMPLEADO E
+where dni in (
+	select TE.empleado
+  	from TRABAJA_EN TE
+	where TE.empleado = E.dni and exists (
+	  select 1
+	  from PROYECTO P
+	  where TE.proyecto = P.numero and P.ubicacion = 'Madrid'
+	)
+)
+order by E.nombre, E.apellido1
 ```
 
 Tabla resultado:
